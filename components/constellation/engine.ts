@@ -11,7 +11,7 @@ import {
 } from "@/content/constellation";
 import { clamp, easeInOutCubic, lerp } from "@/lib/ease";
 import { updateLitSurfaces } from "@/lib/lit";
-import { igniteRamp, scene } from "@/lib/scene";
+import { igniteFlash, igniteRamp, scene } from "@/lib/scene";
 
 type Pt = { x: number; y: number };
 interface Resolved { pos: Pt; spec: NodeSpec | undefined; lit: number }
@@ -214,6 +214,7 @@ export class ConstellationEngine {
     const rb = this.stateNodes(B, jp);
 
     const ramp = igniteRamp(now);
+    const flash = igniteFlash(now);
     const heroW = 1 - clamp(this.s);
     const dimK = lerp(A.dim ?? 1, B.dim ?? 1, e);
 
@@ -348,9 +349,11 @@ export class ConstellationEngine {
     for (const id of NODE_IDS) {
       const n = pos[id];
       if (n.a < 0.01) continue;
-      const rr = 3 * n.r * (1 + 0.12 * bump * (id === "root" ? 1 : 0));
-      const bloomR = 34 * n.r * (1 + 0.5 * bump * (id === "root" ? 1 : 0)) * (0.55 + 0.45 * n.lit);
-      const ga = n.a * n.lit * 0.95;
+      const isRoot = id === "root";
+      const fl = isRoot ? flash * heroW : 0; // ignition overexposure, root only
+      const rr = 3 * n.r * (1 + 0.12 * bump * (isRoot ? 1 : 0) + 0.6 * fl);
+      const bloomR = 34 * n.r * (1 + 0.5 * bump * (isRoot ? 1 : 0) + 1.6 * fl) * (0.55 + 0.45 * n.lit);
+      const ga = Math.min(1, n.a * n.lit * 0.95 * (1 + 0.5 * fl));
       if (ga > 0.02) {
         c.globalAlpha = clamp(ga);
         c.drawImage(this.glow, n.x - bloomR, n.y - bloomR, bloomR * 2, bloomR * 2);
