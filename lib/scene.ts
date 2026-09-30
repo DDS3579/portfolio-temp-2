@@ -27,3 +27,9 @@ export function igniteRamp(now = performance.now()) {
   if (!scene.igniteAt) return 0;
   return easeOutCubic(clamp((now - scene.igniteAt) / 1100));
 }
+/** 0..1..0 bell over the first 1.1s after ignition: the overexposed instant the light comes on. */
+export function igniteFlash(now = performance.now()) {
+  if (!scene.igniteAt) return 0;
+  const t = clamp((now - scene.igniteAt) / 1100);
+  return Math.pow(Math.sin(Math.pow(t, 0.6) * Math.PI), 2);
+}
