@@ -200,7 +200,7 @@ export class ConstellationEngine {
       }
     } else if (state.dynamicLit === "journey") {
       const n = JOURNEY_NODES.length;
-      const active = Math.round(jp * (n - 1));
+      const active = Math.min(n - 1, Math.floor(jp * n));
       JOURNEY_NODES.forEach((id, i) => {
         out[id].lit = i === active ? 1 : i < active ? 0.55 : 0.22;
       });
@@ -225,6 +225,9 @@ export class ConstellationEngine {
 
     const jz = this.zones.journey;
     const jp = jz ? clamp((sy - jz.top) / Math.max(1, jz.h - this.h)) : 0;
+        // rail progress: dot i is reached at the middle of entry i's slice of the scroll
+    const nJ = JOURNEY_NODES.length;
+    const jf = clamp((jp - 0.5 / nJ) / (1 - 1 / nJ));
     scene.journeyProgress = jp;
 
     // 2. resolve both states (all DOM reads happen here, before any writes)
@@ -343,7 +346,7 @@ export class ConstellationEngine {
     });
     const chain = Math.max(1, JOURNEY_NODES.length - 1);
     const frac = (ed: EdgeSpec | null) =>
-      ed && ed.grow ? grow : ed && ed.draw !== undefined ? clamp(jp * chain - ed.draw) : 1;
+      ed && ed.grow ? grow : ed && ed.draw !== undefined ? clamp(jf * chain - ed.draw) : 1;
     c.lineWidth = 1;
     edges.forEach(({ a, b }) => {
       const ref = a ?? b!;
