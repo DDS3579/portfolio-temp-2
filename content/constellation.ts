@@ -21,11 +21,11 @@ export const NODE_LABELS: Partial<Record<NodeId, string>> = {
 };
 
 export type StateName =
-  | "hero" | "origin" | "build" | "scale" | "conglomerate" | "work" | "journey" | "rest" | "contact";
+    | "hero" | "origin" | "build" | "scale" | "conglomerate" | "work" | "capabilities" | "journey" | "rest" | "contact";
 
 /** Order the layer walks through as the page scrolls. */
 export const STATE_ORDER: StateName[] = [
-  "hero", "origin", "build", "scale", "conglomerate", "work", "journey", "rest", "contact",
+    "hero", "origin", "build", "scale", "conglomerate", "work", "capabilities", "journey", "rest", "contact",
 ];
 
 export interface NodeSpec {
@@ -157,6 +157,11 @@ export const STATES: Record<StateName, StateSpec> = {
       { a: "lab-krishi", b: "lab-neurosync" }, { a: "lab-neurosync", b: "lab-mirror" },
     ],
     dynamicLit: "nearest",
+  },
+    // The network collapses into one node that docks at the active discipline (component moves the anchor).
+  capabilities: {
+    nodes: { root: { x: 0.04, y: 0.5, anchor: "cap-marker", lit: 1, r: 1.3 } },
+    edges: [],
   },
   journey: { nodes: journeyNodes, edges: journeyEdges, dynamicLit: "journey" },
   rest: {
