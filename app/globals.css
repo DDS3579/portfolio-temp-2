@@ -137,7 +137,8 @@ html[data-constellation="live"] .period-dot { visibility: hidden; animation: non
   .t-late { transform: none; animation: fade-plain 0.4s ease forwards; animation-delay: 0.1s; }
   .period-dot { transform: none; animation: fade-plain 0.4s ease forwards; animation-delay: 0.2s; }
   .hero-fallback { animation: fade-plain 0.4s ease forwards; animation-delay: 0s; }
-  .scroll-cue { animation: none; transform: none; }
+    .scroll-cue { animation: none; transform: none; }
+  .scroll-cue-x { animation: none; transform: none; }
   @keyframes fade-plain { from { opacity: 0; } to { opacity: 1; } }
 }
 @media (prefers-reduced-motion: no-preference) { @keyframes fade-plain { from { opacity: 0; } to { opacity: 1; } } }
