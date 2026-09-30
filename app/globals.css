@@ -65,7 +65,8 @@ body {
   line-height: 0.95;
   font-weight: 700;
 }
-.t-hero { font-size: clamp(3rem, 0.5rem + 7.6vw, 9.5rem); font-weight: 800; font-variation-settings: "wdth" 82; }
+.t-hero { font-size: clamp(3rem, min(11.2vw, 17dvh), 12.5rem); font-weight: 800; font-variation-settings: "wdth" 82; }
+@media (max-width: 639px) { .t-hero { font-size: clamp(2.75rem, 14.4vw, 4rem); } }
 .t-section { font-size: clamp(2.25rem, 1rem + 4.2vw, 4.75rem); }
 .t-body { font-size: 1.0625rem; line-height: 1.65; max-width: 60ch; }
 .mono { font-family: var(--font-mono); font-size: 0.75rem; letter-spacing: 0; line-height: 1.4; }
@@ -98,10 +99,16 @@ body {
 html[data-shader="live"] .hero-fallback { display: none; }
 
 /* ---- hero timeline (CSS only: never blocked by hydration) ---- */
-.line-mask { display: block; overflow: hidden; padding-bottom: 0.08em; margin-bottom: -0.08em; }
-.line-inner { display: block; animation: rise 0.9s var(--ease) both; animation-delay: calc(0.3s + var(--i, 0) * 0.12s); }
+.line-mask { display: block; overflow: hidden; padding-bottom: 0.16em; margin-bottom: -0.16em; }
+.line-inner {
+  display: block;
+  /* rise out of the mask, then get lit by the period: nearest line first, light travels up */
+  animation: rise 0.9s var(--ease) both, unlit-to-lit 1.4s var(--ease) both;
+  animation-delay: calc(0.3s + var(--i, 0) * 0.12s), calc(1.3s + (2 - var(--i, 0)) * 0.14s);
+}
 @keyframes rise { from { transform: translateY(105%); } to { transform: translateY(0); } }
 .t-late { opacity: 0; transform: translateY(16px); animation: late 0.8s var(--ease) forwards; animation-delay: var(--d, 1.6s); }
+@keyframes unlit-to-lit { from { opacity: 0.28; } to { opacity: 1; } }
 @keyframes late { to { opacity: 1; transform: none; } }
 
 .period-dot {
@@ -116,6 +123,13 @@ html[data-constellation="live"] .period-dot { visibility: hidden; animation: non
 
 .scroll-cue { animation: cue 2.4s var(--ease) infinite; }
 @keyframes cue { 0% { transform: scaleY(0); transform-origin: top; } 50% { transform: scaleY(1); transform-origin: top; } 51% { transform-origin: bottom; } 100% { transform: scaleY(0); transform-origin: bottom; } }
+.scroll-cue-x { transform: scaleX(0); transform-origin: left; animation: cue-x 3s var(--ease) 2.6s infinite; }
+@keyframes cue-x {
+  0% { transform: scaleX(0); transform-origin: left; }
+  45% { transform: scaleX(1); transform-origin: left; }
+  55% { transform: scaleX(1); transform-origin: right; }
+  100% { transform: scaleX(0); transform-origin: right; }
+}
 
 /* ---- lit surfaces: the only glow besides the node ---- */
 .lit-surface { position: relative; isolation: isolate; --lit: 0; }
