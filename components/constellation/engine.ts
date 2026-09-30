@@ -91,7 +91,7 @@ export class ConstellationEngine {
       return { top: r.top + sy, h: r.height };
     };
     const zones = {
-      hero: z("hero"), chapters: z("chapters"), work: z("work"), journey: z("journey"),
+            hero: z("hero"), chapters: z("chapters"), work: z("work"), capabilities: z("capabilities"), journey: z("journey"),
       philosophy: z("philosophy"), contact: z("contact"),
     };
     this.zones = zones;
@@ -111,16 +111,20 @@ export class ConstellationEngine {
       push(zones.work.top, 5);
       push(zones.work.top + zones.work.h - vh, 5);
     }
+        if (zones.capabilities) {
+      push(zones.capabilities.top, 6);
+      push(zones.capabilities.top + zones.capabilities.h - vh, 6);
+    }
     if (zones.journey) {
-      push(zones.journey.top, 6);
-      push(zones.journey.top + zones.journey.h - vh, 6);
+      push(zones.journey.top, 7);
+      push(zones.journey.top + zones.journey.h - vh, 7);
     }
-    if (zones.philosophy) push(zones.philosophy.top, 7);
+    if (zones.philosophy) push(zones.philosophy.top, 8);
     if (zones.contact) {
-      push(zones.contact.top - vh * 0.9, 7);
-      push(zones.contact.top - vh * 0.3, 8);
+      push(zones.contact.top - vh * 0.9, 8);
+      push(zones.contact.top - vh * 0.3, 9);
     }
-    push(Number.MAX_SAFE_INTEGER, 8);
+    push(Number.MAX_SAFE_INTEGER, 9);
     this.stops = st;
 
     this.anchors.clear();
@@ -144,7 +148,7 @@ export class ConstellationEngine {
         return y1 === y0 ? s1 : lerp(s0, s1, clamp((scrollY - y0) / (y1 - y0)));
       }
     }
-    return 8;
+        return STATE_ORDER.length - 1;
   }
 
   private resolve(spec: NodeSpec | undefined, rootPos: Pt): Pt {
@@ -307,11 +311,11 @@ export class ConstellationEngine {
 
     // 5. contact pulse: one slow swell on arrival
     let bump = 0;
-    if (this.s > 7.92) {
+    if (this.s > STATE_ORDER.length - 1.08) {
       if (!this.pulseStart) this.pulseStart = now;
       const p = clamp((now - this.pulseStart) / 2600);
       bump = Math.sin(p * Math.PI);
-    } else if (this.s < 7.4) {
+    } else if (this.s < STATE_ORDER.length - 1.6) {
       this.pulseStart = 0;
     }
 
