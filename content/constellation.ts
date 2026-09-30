@@ -38,6 +38,8 @@ export interface NodeSpec {
   a?: number;
   /** Radius multiplier, default 1. */
   r?: number;
+    /** Size the node to its DOM anchor (only the hero period uses this). */
+  fit?: boolean;
 }
 export interface EdgeSpec {
   a: NodeId;
@@ -79,7 +81,7 @@ const journeyEdges: EdgeSpec[] = JOURNEY_NODES.slice(1).map((id, i) => ({
 
 export const STATES: Record<StateName, StateSpec> = {
   hero: {
-    nodes: { root: { x: 0.62, y: 0.38, anchor: "hero-period", lit: 1 } },
+        nodes: { root: { x: 0.62, y: 0.38, anchor: "hero-period", lit: 1, fit: true } },
     edges: [],
   },
   origin: {

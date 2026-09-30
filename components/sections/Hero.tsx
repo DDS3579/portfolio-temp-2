@@ -1,9 +1,10 @@
 "use client";
 import { useScroll, useSpring, useTransform } from "motion/react";
 import * as m from "motion/react-m";
-import { useEffect, useRef } from "react";
-import { buttonClass } from "@/components/ui/button";
+import { Fragment, useEffect, useRef } from "react";import { buttonClass } from "@/components/ui/button";
 import { site } from "@/content/site";
+import { clamp, easeOutCubic } from "@/lib/ease";
+import { subscribe } from "@/lib/loop";
 import { ignite, scene } from "@/lib/scene";
 import { scrollToId } from "@/lib/scroll";
 import { useReducedMotionPref, useTier } from "@/lib/tier";
@@ -73,6 +74,37 @@ export default function Hero() {
     };
   }, [reduced]);
 
+
+  // After the room lights up, the headline falls off with distance from the light (0.5 floor).
+  // Opacity only, one rect read per word per frame, desktop only.
+  useEffect(() => {
+    if (!full) return;
+    const FLOOR = 0.5; // dimmest a word gets
+    const REACH = 650; // px; falloff length from the light
+    const words = Array.from(title.current?.querySelectorAll<HTMLElement>(".hw") ?? []);
+    const cur = words.map(() => 1);
+    const shown = words.map(() => 1);
+    const off = subscribe((dt, t) => {
+      if (!scene.igniteAt || window.scrollY > window.innerHeight * 0.9) return;
+      const settle = easeOutCubic(clamp((t - scene.igniteAt - 900) / 1800));
+      const rects = words.map((w) => w.getBoundingClientRect());
+      rects.forEach((r, i) => {
+        const dx = Math.max(r.left - scene.lightX, 0, scene.lightX - r.right);
+        const dy = Math.max(r.top - scene.lightY, 0, scene.lightY - r.bottom);
+        const fall = FLOOR + (1 - FLOOR) * Math.exp(-Math.hypot(dx, dy) / REACH);
+        cur[i] = cur[i]! + (1 - (1 - fall) * settle - cur[i]!) * (1 - Math.exp(-dt * 6));
+        if (Math.abs(cur[i]! - shown[i]!) > 0.004) {
+          shown[i] = cur[i]!;
+          words[i]!.style.opacity = cur[i]!.toFixed(3);
+        }
+      });
+    }, 20);
+    return () => {
+      off();
+      words.forEach((w) => w.style.removeProperty("opacity"));
+    };
+  }, [full]);
+
   return (
     <section
       ref={section}
@@ -96,7 +128,12 @@ export default function Hero() {
             {h.lines.map((line, i) => (
               <span key={line} className="line-mask">
                 <span className="line-inner" style={{ "--i": i } as React.CSSProperties}>
-                  {line}
+                                    {line.split(" ").map((w, wi, all) => (
+                    <Fragment key={wi}>
+                      <span className="hw">{w}</span>
+                      {wi < all.length - 1 && " "}
+                    </Fragment>
+                  ))}
                   {i === h.lines.length - 1 && (
                     <span ref={period} className="period-dot" data-node-anchor="hero-period" aria-hidden="true" />
                   )}
@@ -108,7 +145,7 @@ export default function Hero() {
 
         {/* one bottom band: support, actions, proof */}
         <div
-          className="t-late relative grid gap-x-8 gap-y-8 border-t border-border pt-6 lg:grid-cols-12 lg:items-end"
+          className="t-late relative grid gap-x-8 gap-y-8 border-t border-border pt-6 lg:grid-cols-12 lg:items-start"
           style={delay("1.9s")}
         >
           <span aria-hidden className="absolute -top-px left-0 h-px w-24 overflow-hidden">

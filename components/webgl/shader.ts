@@ -63,13 +63,14 @@ void main(){
   }
   rays /= 14.0;
   float reach = exp(-dist*2.4);
-
   float glow = exp(-dist*7.5);
+  float halo = exp(-dist*5.2);                        // wide, soft: the room's ambient warmth
   vec3 warm = mix(EMBER, KEY, smoothstep(0.0,0.35,glow));
   warm = mix(warm, CORE, smoothstep(0.35,1.0,glow));
-  col += warm * (glow*0.55 + rays*reach*0.32 * (0.5+f)) * uIntensity;
+  float breathe = 1.0 + 0.035*sin(uTime*1.1);         // the source is alive, not a lamp
+  col += warm * (glow*0.6 + halo*0.20 + rays*reach*0.42 * (0.5+f)) * uIntensity * breathe;
   // fog catches the light
-  col += KEY * 0.10 * smoothstep(0.3,0.8,f) * reach * uIntensity;
+  col += KEY * 0.15 * smoothstep(0.3,0.8,f) * reach * uIntensity * breathe;
 
   col += (hash(gl_FragCoord.xy + uTime) - 0.5) * 0.004; // dither, avoids banding
   o = vec4(col, 1.0);

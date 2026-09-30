@@ -14,7 +14,7 @@ import { updateLitSurfaces } from "@/lib/lit";
 import { igniteFlash, igniteRamp, scene } from "@/lib/scene";
 
 type Pt = { x: number; y: number };
-interface Resolved { pos: Pt; spec: NodeSpec | undefined; lit: number }
+interface Resolved { pos: Pt; spec: NodeSpec | undefined; lit: number; r: number }
 
 const COOL = [154, 161, 172] as const; // muted
 const CORE = [255, 217, 160] as const; // core
@@ -159,13 +159,27 @@ export class ConstellationEngine {
     return { x: spec.x * this.w, y: spec.y * this.h };
   }
 
+
+  /** For `fit` nodes: radius in px of the DOM anchor (the headline's period), so the node IS the period. */
+  private fitRadius(spec: NodeSpec | undefined): number {
+    if (!spec?.fit || !spec.anchor) return 0;
+    const el = this.anchors.get(spec.anchor);
+    return el ? el.offsetWidth / 2 : 0; // offsetWidth ignores the DOM dot's own scale transform
+  }
+
   private stateNodes(state: StateSpec, jp: number): Record<NodeId, Resolved> {
     const rootSpec = state.nodes.root;
     const rootPos = this.resolve(rootSpec, { x: this.w * 0.5, y: this.h * 0.5 });
     const out = {} as Record<NodeId, Resolved>;
     for (const id of NODE_IDS) {
       const spec = state.nodes[id];
-      out[id] = { spec, pos: id === "root" ? rootPos : this.resolve(spec, rootPos), lit: spec?.lit ?? 0.6 };
+      const fit = this.fitRadius(spec);
+      out[id] = {
+        spec,
+        pos: id === "root" ? rootPos : this.resolve(spec, rootPos),
+        lit: spec?.lit ?? 0.6,
+        r: fit ? fit / 3 : (spec?.r ?? 1), // 3px is the base node radius
+      };
     }
     if (state.dynamicLit === "nearest") {
       let best: NodeId | null = null;
@@ -231,7 +245,8 @@ export class ConstellationEngine {
       if (id === "root") alpha *= lerp(1, ramp, heroW);
       let lit = lerp(litA, litB, e);
       if (scene.hoverNode === id && alpha > 0.5) lit = Math.max(lit, 1);
-      const r = lerp(a.spec?.r ?? 1, b.spec?.r ?? 1, e);
+      let r = lerp(a.spec ? a.r : 1, b.spec ? b.r : 1, e);
+      if (id === "root") r *= lerp(1, 0.3 + 0.7 * ramp, heroW); // the period scales in with the ignition
       let x = lerp(a.pos.x, b.pos.x, e);
       let y = lerp(a.pos.y, b.pos.y, e);
       // pointer magnetism: pull up to 6px within 140px
