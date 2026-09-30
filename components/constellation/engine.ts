@@ -9,8 +9,7 @@ import {
   type NodeSpec,
   type StateSpec,
 } from "@/content/constellation";
-import { clamp, easeInOutCubic, lerp } from "@/lib/ease";
-import { updateLitSurfaces } from "@/lib/lit";
+import { clamp, easeInOutCubic, easeOutCubic, lerp } from "@/lib/ease";import { updateLitSurfaces } from "@/lib/lit";
 import { igniteFlash, igniteRamp, scene } from "@/lib/scene";
 
 type Pt = { x: number; y: number };
@@ -44,6 +43,7 @@ export class ConstellationEngine {
   private light: Pt = { x: 0, y: 0 };
   private cssLight: Pt = { x: -999, y: -999 };
   private pulseStart = 0;
+  private arriveAt = 0;
   private first = true;
 
   constructor(private canvas: HTMLCanvasElement) {
@@ -315,6 +315,14 @@ export class ConstellationEngine {
       this.pulseStart = 0;
     }
 
+    // origin: once the node has arrived, its edge slowly grows toward the story
+    if (this.s > 0.97 && this.s < 1.5) {
+      if (!this.arriveAt) this.arriveAt = now;
+    } else if (this.s < 0.6 || this.s > 2.2) {
+      this.arriveAt = 0;
+    }
+    const grow = this.arriveAt ? easeOutCubic(clamp((now - this.arriveAt) / 1800)) : 0;
+
     // 6. draw
     const c = this.ctx;
     c.setTransform(this.dpr, 0, 0, this.dpr, 0, 0);
@@ -331,7 +339,7 @@ export class ConstellationEngine {
     });
     const chain = Math.max(1, JOURNEY_NODES.length - 1);
     const frac = (ed: EdgeSpec | null) =>
-      ed && ed.draw !== undefined ? clamp(jp * chain - ed.draw) : 1;
+      ed && ed.grow ? grow : ed && ed.draw !== undefined ? clamp(jp * chain - ed.draw) : 1;
     c.lineWidth = 1;
     edges.forEach(({ a, b }) => {
       const ref = a ?? b!;

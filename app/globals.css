@@ -61,7 +61,7 @@ body {
 .font-display {
   font-family: var(--font-display);
   font-variation-settings: "wdth" 86;
-  letter-spacing: -0.03em;
+  letter-spacing: -0.02em;
   line-height: 0.95;
   font-weight: 700;
 }
