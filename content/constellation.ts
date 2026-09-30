@@ -50,6 +50,8 @@ export interface EdgeSpec {
   free?: boolean;
   /** Journey scrub: index in the chain; the edge draws with progress. */
   draw?: number;
+    /** Origin: grows once the node has arrived (time-based). */
+  grow?: boolean;
 }
 export interface StateSpec {
   nodes: Partial<Record<NodeId, NodeSpec>>;
@@ -87,9 +89,9 @@ export const STATES: Record<StateName, StateSpec> = {
   origin: {
     nodes: {
       root: { x: 0.2, y: 0.5, lit: 1 },
-      h1: { x: 0.36, y: 0.5, a: 0 },
+      h1: { x: 0.4, y: 0.5, a: 0 },
     },
-    edges: [{ a: "root", b: "h1", k: 0.55, free: true }],
+        edges: [{ a: "root", b: "h1", k: 0.55, free: true, grow: true }],
   },
   build: {
     // A browser-window wireframe: frame, header rule, sidebar rule, and root as the first block.
@@ -122,14 +124,14 @@ export const STATES: Record<StateName, StateSpec> = {
   },
   conglomerate: {
     nodes: {
-      root: { x: 0.22, y: 0.5, lit: 1, r: 1.25 },
-      agency: { x: 0.36, y: 0.32, lit: 0.75 },
-      esports: { x: 0.4, y: 0.5, lit: 0.75 },
-      education: { x: 0.36, y: 0.68, lit: 0.75 },
-      nss: { x: 0.1, y: 0.3, lit: 0.6 },
-      "lab-krishi": { x: 0.08, y: 0.66, lit: 0.5 },
-      "lab-neurosync": { x: 0.15, y: 0.8, lit: 0.5 },
-      "lab-mirror": { x: 0.28, y: 0.84, lit: 0.5 },
+      root: { x: 0.18, y: 0.5, lit: 1, r: 1.25 },
+      agency: { x: 0.3, y: 0.32, lit: 0.75 },
+      esports: { x: 0.33, y: 0.5, lit: 0.75 },
+      education: { x: 0.3, y: 0.68, lit: 0.75 },
+      nss: { x: 0.08, y: 0.3, lit: 0.6 },
+      "lab-krishi": { x: 0.07, y: 0.68, lit: 0.5 },
+      "lab-neurosync": { x: 0.14, y: 0.8, lit: 0.5 },
+      "lab-mirror": { x: 0.25, y: 0.85, lit: 0.5 },
     },
     edges: [
       { a: "root", b: "agency" }, { a: "root", b: "esports" }, { a: "root", b: "education" },
