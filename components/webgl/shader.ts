@@ -30,6 +30,12 @@ float fog(vec2 uv){
   return fbm(q + vec2(t, -t*0.6) + fbm(q*0.7 - t));
 }
 
+// Ray-march density: 2 octaves, no domain warp. ~5x cheaper than fog(), visually the same at ray scale.
+float fogLite(vec2 uv){
+  vec2 q = uv*vec2(uRes.x/uRes.y,1.0)*1.6 + vec2(uTime*0.03, -uTime*0.018);
+  return noise(q)*0.62 + noise(q*2.03+vec2(3.1,1.7))*0.38;
+}
+
 void main(){
   vec2 uv = gl_FragCoord.xy / uRes; uv.y = 1.0 - uv.y;
   float asp = uRes.x/uRes.y;
@@ -45,17 +51,17 @@ void main(){
   float f = fog(uv);
   vec3 col = BG + COOL*0.10*smoothstep(0.25,0.85,f);
 
-  // cheap god-rays: 20 samples from this pixel toward the light, accumulating fog transmittance
+  // god-rays: 14 jittered samples toward the light through the cheap density field
   float rays = 0.0; float decay = 1.0;
-  vec2 stepv = (uLight - uv) / 20.0;
-  vec2 p = uv;
-  for(int i=0;i<20;i++){
+  vec2 stepv = (uLight - uv) / 14.0;
+  vec2 p = uv + stepv * hash(gl_FragCoord.xy);
+  for(int i=0;i<14;i++){
     p += stepv;
-    float dens = smoothstep(0.35,0.8,fog(p));
+    float dens = smoothstep(0.35,0.8,fogLite(p));
     rays += (1.0 - dens*0.85) * decay;
-    decay *= 0.94;
+    decay *= 0.92;
   }
-  rays /= 20.0;
+  rays /= 14.0;
   float reach = exp(-dist*2.4);
 
   float glow = exp(-dist*7.5);
