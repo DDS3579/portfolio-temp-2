@@ -82,13 +82,45 @@ function Visual({ b }: { b: Branch }) {
   );
 }
 
-function BranchRow({ b, i }: { b: Branch; i: number }) {
-  const flip = i % 2 === 1;
-  const rows = [
+function Figures({ items }: { items: { value: string; label: string }[] }) {
+  return (
+    <dl className="mt-3 grid grid-cols-3 gap-4">
+      {items.map((f) => (
+        <div key={f.label} className="flex flex-col-reverse gap-2">
+          <dt className="text-sm leading-snug text-muted">{f.label}</dt>
+          <dd className="font-display text-[clamp(1.75rem,1.1rem+1.8vw,2.75rem)] leading-none tabular-nums">{f.value}</dd>
+        </div>
+      ))}
+    </dl>
+  );
+}
+
+/** A branch with nothing to say yet renders as one quiet line instead of a giant empty visual. */
+const isThin = (b: Branch) => !has(b.context) && !has(b.challenge) && !has(b.outcome);
+
+function ThinRow({ b }: { b: Branch }) {
+  return (
+    <article
+      className="relative grid gap-2 py-9 md:grid-cols-12 md:items-baseline md:gap-8"
+      onPointerEnter={() => { scene.hoverNode = b.node; }}
+      onPointerLeave={() => { scene.hoverNode = null; }}
+      aria-labelledby={`branch-${b.slug}`}
+    >
+      <span aria-hidden data-node-anchor={`row-${b.node}`} className="absolute top-[3.3rem] left-[calc(var(--gutter)*-0.5)] size-px" />
+      <h4 id={`branch-${b.slug}`} className="font-display text-[clamp(2rem,1.2rem+2.6vw,3.5rem)] md:col-span-7">
+        {b.name}
+      </h4>
+      <p className="text-muted md:col-span-5">{b.category}</p>
+    </article>
+  );
+}
+
+function BranchRow({ b, flip }: { b: Branch; flip: boolean }) {
+  const rest = [
     ["Context", b.context],
     ["Challenge", b.challenge],
-    ["Outcome", b.outcome],
   ] as const;
+  const figures = b.figures?.length ? b.figures : null;
   return (
     <article
       className="relative grid items-center gap-8 py-14 lg:grid-cols-12 lg:gap-12 lg:py-20"
@@ -110,11 +142,26 @@ function BranchRow({ b, i }: { b: Branch; i: number }) {
           {b.name}
         </h4>
         {has(b.role) && <p className="mt-3 text-muted">My role: {b.role}</p>}
-        <dl className="mt-6 space-y-4">
-          {rows.filter(([, v]) => has(v)).map(([k, v]) => (
+
+        {/* proof first: what happened leads, how it got there follows */}
+        {has(b.outcome) && (
+          <div className="mt-7">
+            <p className="text-sm text-muted">Outcome</p>
+            {figures ? (
+              <>
+                <p className="sr-only">{b.outcome}</p>
+                <Figures items={figures} />
+              </>
+            ) : (
+              <p className="mt-2 text-[clamp(1.15rem,1rem+0.5vw,1.4rem)] leading-snug">{b.outcome}</p>
+            )}
+          </div>
+        )}
+        <dl className="mt-7 space-y-3 border-t border-border pt-5">
+          {rest.filter(([, v]) => has(v)).map(([k, v]) => (
             <div key={k} className="grid grid-cols-[5.5rem_1fr] gap-x-4">
               <dt className="text-sm text-muted">{k}</dt>
-              <dd className="text-[0.98rem] leading-relaxed">{v}</dd>
+              <dd className="text-[0.95rem] leading-relaxed text-muted">{v}</dd>
             </div>
           ))}
         </dl>
@@ -200,9 +247,13 @@ export default function Work() {
           <p className="t-body mt-3 text-muted">{umbrella.line}</p>
         </Reveal>
         <div className="divide-y divide-border">
-          {branches.map((b, i) => (
-            <BranchRow key={b.slug} b={b} i={i} />
-          ))}
+          {branches.map((b) =>
+            isThin(b) ? (
+              <ThinRow key={b.slug} b={b} />
+            ) : (
+              <BranchRow key={b.slug} b={b} flip={branches.filter((x) => !isThin(x)).indexOf(b) % 2 === 1} />
+            ),
+          )}
         </div>
       </div>
 

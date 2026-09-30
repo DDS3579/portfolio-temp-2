@@ -158,3 +158,15 @@ html[data-constellation="live"] .period-dot { visibility: hidden; animation: non
 @media (prefers-reduced-motion: no-preference) { @keyframes fade-plain { from { opacity: 0; } to { opacity: 1; } } }
 
 .no-scrollbar { scrollbar-width: none; }
+
+
+
+/* ---- Work art: strokes warm with the parent's --lit (set by the lit surface) ---- */
+.art-line, .art-box {
+  stroke: color-mix(in srgb, rgb(255 255 255 / 0.16), rgb(232 176 75) calc(var(--lit, 0) * 60%));
+  stroke-width: 1;
+}
+.art-line { fill: none; }
+.art-box { fill: rgb(154 161 172 / 0.07); }
+.art-node { fill: rgb(154 161 172 / 0.9); }
+.art-core { fill: #ffd9a0; opacity: var(--lit, 0); }

@@ -22,6 +22,8 @@ export interface Branch extends Story {
   links: Links;
   /** Optional real screenshot in /public/work/<slug>.webp with its size. Falls back to the generated composition. */
   image: Maybe<{ src: string; width: number; height: number; alt: string }>;
+    /** Real numbers only. When present they replace the outcome sentence visually (it stays for screen readers). */
+  figures?: { value: string; label: string }[];
 }
 
 export const umbrella = {
@@ -52,6 +54,11 @@ export const branches: Branch[] = [
     context: "Online Mobile Legends: Bang Bang tournaments for players across Nepal.",
     challenge: "Growing from a 16-team first season to a 32-team, five-day format with sponsors and two concurrent livestreams.",
     outcome: "Season 1.0 drew 16 teams, over 100k Instagram views and more than 5,000 accounts reached.",
+        figures: [
+      { value: "16", label: "teams in Season 1.0" },
+      { value: "100k+", label: "Instagram views" },
+      { value: "5,000+", label: "accounts reached" },
+    ],
     stack: FILL,
     links: { live: FILL, github: FILL, caseStudy: FILL },
     image: FILL,
