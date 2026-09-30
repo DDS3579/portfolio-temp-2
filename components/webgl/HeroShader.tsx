@@ -2,7 +2,7 @@
 import { useEffect, useRef } from "react";
 import { clamp } from "@/lib/ease";
 import { subscribe } from "@/lib/loop";
-import { igniteRamp, scene } from "@/lib/scene";
+import { igniteFlash, igniteRamp, scene } from "@/lib/scene";
 import { FRAG, VERT } from "./shader";
 
 type Nav = Navigator & { connection?: { saveData?: boolean } };
@@ -71,10 +71,16 @@ export default function HeroShader() {
       gl.drawArrays(gl.TRIANGLES, 0, 3);
     };
 
-    // Adaptive guard: first 30 frames avg > 24ms -> 0.4x; still slow -> stop and use the CSS gradient.
-    let frames = 0;
-    let acc = 0;
+    // Adaptive guard: skip the compile/first-draw stall, then take the MEDIAN of 40 consecutive frames.
+    // > 22ms -> 0.4x scale; still slow -> stop and let the CSS gradient carry the hero.
+    const samples: number[] = [];
+    let warm = 12;
+    let checking = true;
     let stage = 0;
+    let lastFrameDrew = false;
+    let lastDraw = 0;
+    let lx = -1;
+    let ly = -1;
     let off = () => {};
 
     const fadeTo = (v: number) => (canvas.style.opacity = String(v));
@@ -91,19 +97,30 @@ export default function HeroShader() {
         if (stopped) return;
         const fade = clamp(1 - window.scrollY / (window.innerHeight * 0.9));
         canvas.style.opacity = String(fade);
-        if (!visible || fade <= 0.01) return;
-        frames++;
-        acc += dt * 1000;
-        if (frames === 30) {
-          const avg = acc / frames;
-          frames = 0;
-          acc = 0;
-          if (avg > 24) {
-            if (stage === 0) { stage = 1; scale = 0.4; size(); }
-            else { stopped = true; canvas.style.opacity = "0"; delete html.dataset.shader; return; }
+        if (!visible || fade <= 0.01) { lastFrameDrew = false; return; }
+
+        // Full rate while the picture changes (measuring, ignition, light moving); ~30fps when only the fog drifts.
+        const moving = Math.hypot(scene.lightX - lx, scene.lightY - ly) > 0.4;
+        const igniting = scene.igniteAt !== 0 && igniteRamp(t) < 1;
+        if (!(checking || moving || igniting) && t - lastDraw < 30) { lastFrameDrew = false; return; }
+        lx = scene.lightX;
+        ly = scene.lightY;
+
+        if (checking) {
+          if (warm > 0) warm--;
+          else if (lastFrameDrew) samples.push(dt * 1000);
+          if (samples.length >= 40) {
+            const median = [...samples].sort((a, b) => a - b)[20]!;
+            samples.length = 0;
+            if (median > 22) {
+              if (stage === 0) { stage = 1; scale = 0.4; size(); warm = 12; }
+              else { stopped = true; canvas.style.opacity = "0"; delete html.dataset.shader; return; }
+            } else checking = false;
           }
         }
-        draw(t, igniteRamp(t));
+        lastDraw = t;
+        lastFrameDrew = true;
+        draw(t, igniteRamp(t) + 0.5 * igniteFlash(t));
       }, 5);
     }
 
