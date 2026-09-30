@@ -1,5 +1,5 @@
 "use client";
-import { useMotionValueEvent, useScroll, useSpring } from "motion/react";
+import { useMotionValueEvent, useScroll, useTransform } from "motion/react";
 import * as m from "motion/react-m";
 import { useRef, useState } from "react";
 import Reveal from "@/components/motion/Reveal";
@@ -26,15 +26,64 @@ function EntryBody({ e, i }: { e: Entry; i: number }) {
   );
 }
 
-const bigLabel = (e: Entry, i: number) => (has(e.dates) ? e.dates : pad(i + 1));
+/** One digit that rolls like an odometer wheel. The strip is 10em tall; the window shows 1em. */
+function Digit({ d }: { d: number }) {
+  return (
+    <span className="inline-block h-[1em] overflow-hidden px-[0.03em] align-top">
+      <span
+        className="block transition-transform duration-700 ease-[var(--ease)]"
+        style={{ transform: `translateY(${-d * 10}%)` }}
+      >
+        {Array.from({ length: 10 }, (_, n) => (
+          <span key={n} className="block h-[1em] leading-none">{n}</span>
+        ))}
+      </span>
+    </span>
+  );
+}
+
+/** Without dates the counter is the entry number, rolling. With dates, each range crossfades in place. */
+function Counter({ active }: { active: number }) {
+  const useDates = entries.some((e) => has(e.dates));
+  if (!useDates) {
+    return (
+      <span
+        aria-hidden
+        className="outline-numeral flex text-[clamp(5rem,14vw,13rem)] [-webkit-text-stroke-color:rgb(255_255_255/0.34)]"
+      >
+        {pad(active + 1).split("").map((ch, k) => (
+          <Digit key={k} d={Number(ch)} />
+        ))}
+      </span>
+    );
+  }
+  return (
+    <div className="relative h-[clamp(5rem,12vw,11rem)]" aria-hidden>
+      {entries.map((e, i) => (
+        <span
+          key={i}
+          className={cn(
+            "font-display absolute inset-x-0 top-0 text-[clamp(3.5rem,8vw,8.5rem)] tabular-nums transition-opacity duration-500 ease-[var(--ease)]",
+            i === active ? "opacity-100" : "opacity-0",
+          )}
+        >
+          {has(e.dates) ? e.dates : pad(i + 1)}
+        </span>
+      ))}
+    </div>
+  );
+}
 
 function Pinned() {
   const ref = useRef<HTMLElement>(null);
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end end"] });
-  const p = useSpring(scrollYProgress, { stiffness: 120, damping: 30 });
+  const { scrollYProgress: entry } = useScroll({ target: ref, offset: ["start end", "start start"] });
+  const sceneO = useTransform(entry, [0.4, 0.9], [0, 1]);
+  const sceneY = useTransform(entry, [0.4, 0.9], [24, 0]);
   const [active, setActive] = useState(0);
+  // every entry owns an equal 1/total slice of the scroll (the constellation uses the same slicing)
   useMotionValueEvent(scrollYProgress, "change", (v) =>
-    setActive(Math.min(total - 1, Math.max(0, Math.round(v * (total - 1))))),
+    setActive(Math.min(total - 1, Math.max(0, Math.floor(v * total)))),
   );
 
   return (
@@ -47,29 +96,19 @@ function Pinned() {
       className="relative"
     >
       <div className="sticky top-0 flex h-[100dvh] items-center">
-        <div className="mx-auto grid w-full max-w-[1440px] grid-cols-12 items-center gap-x-6 px-[var(--gutter)]">
+        <m.div
+          style={{ opacity: sceneO, y: sceneY }}
+          className="mx-auto grid w-full max-w-[1440px] grid-cols-12 items-center gap-x-6 px-[var(--gutter)]"
+        >
           <div className="col-span-4">
             <SectionMarker className="mb-4">{journeyCopy.marker}</SectionMarker>
             <h2 id="journey-title" className="sr-only">{journeyCopy.title}</h2>
-            <div className="relative h-[clamp(5rem,12vw,11rem)]" aria-hidden>
-              {entries.map((e, i) => (
-                <span
-                  key={i}
-                  className={cn(
-                    "font-display absolute inset-x-0 top-0 text-[clamp(3.5rem,8vw,8.5rem)] tabular-nums transition-opacity duration-500 ease-[var(--ease)]",
-                    i === active ? "opacity-100" : "opacity-0",
-                  )}
-                >
-                  {bigLabel(e, i)}
-                </span>
-              ))}
-            </div>
+            <Counter active={active} />
           </div>
 
-          {/* rail: the canvas nodes dock onto these anchors */}
+          {/* rail: a faint track; the constellation's nodes dock on the anchors and its edges draw the progress */}
           <div className="relative col-span-2 h-[60dvh]" aria-hidden>
             <span className="absolute inset-y-0 left-1/2 w-px bg-white/10" />
-            <m.span className="absolute inset-y-0 left-1/2 w-px origin-top bg-key/70" style={{ scaleY: p }} />
             {entries.map((_, i) => (
               <span
                 key={i}
@@ -90,11 +129,19 @@ function Pinned() {
                   i === active ? "opacity-100" : "pointer-events-none opacity-0",
                 )}
               >
-                <EntryBody e={e} i={i} />
+                {/* entries travel: past ones leave upward, upcoming ones arrive from below */}
+                <div
+                  className={cn(
+                    "transition-transform duration-700 ease-[var(--ease)]",
+                    i === active ? "translate-y-0" : i < active ? "-translate-y-5" : "translate-y-5",
+                  )}
+                >
+                  <EntryBody e={e} i={i} />
+                </div>
               </li>
             ))}
           </ol>
-        </div>
+        </m.div>
       </div>
     </section>
   );
