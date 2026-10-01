@@ -79,8 +79,8 @@ export default function Hero() {
   // Opacity only, one rect read per word per frame, desktop only.
   useEffect(() => {
     if (!full) return;
-    const FLOOR = 0.5; // dimmest a word gets
-    const REACH = 650; // px; falloff length from the light
+    const FLOOR = 0.74; // dimmest a word gets (the heavy role words must keep leading)
+    const REACH = 900; // px; falloff length from the light
     const words = Array.from(title.current?.querySelectorAll<HTMLElement>(".hw") ?? []);
     const cur = words.map(() => 1);
     const shown = words.map(() => 1);
@@ -130,7 +130,7 @@ export default function Hero() {
                 <span className="line-inner" style={{ "--i": i } as React.CSSProperties}>
                                     {line.split(" ").map((w, wi, all) => (
                     <Fragment key={wi}>
-                      <span className="hw">{w}</span>
+                      <span className={wi === 0 ? "hw" : "hw by"}>{w}</span>
                       {wi < all.length - 1 && " "}
                     </Fragment>
                   ))}
