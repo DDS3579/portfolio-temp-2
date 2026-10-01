@@ -124,7 +124,7 @@ function Pinned() {
             </div>
           ))}
         </m.div>
-        <div className="absolute inset-x-0 bottom-8 z-30 mx-auto w-full max-w-[1440px] px-[var(--gutter)]">
+        <div className="absolute inset-x-0 bottom-16 z-30 mx-auto w-full max-w-[1440px] px-[var(--gutter)]">
           <Rail labels={chapterRail} progress={rail} active={active} />
         </div>
       </div>

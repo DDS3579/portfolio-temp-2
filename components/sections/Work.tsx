@@ -267,10 +267,10 @@ export default function Work() {
         <Reveal>
           <h3 className="font-display text-[clamp(1.75rem,1.1rem+2vw,3rem)]">{workCopy.labTitle}</h3>
         </Reveal>
-        <div className="mt-14 grid gap-8 pb-12 md:grid-cols-3 md:gap-6">
+        <div className="mt-14 grid gap-8 pb-12 md:grid-cols-2 lg:grid-cols-3 md:gap-6">
           <LabCard l={lab[0]!} offset="" />
-          <LabCard l={lab[1]!} offset="md:mt-12" />
-          <LabCard l={lab[2]!} offset="md:mt-24" />
+          <LabCard l={lab[1]!} offset="lg:mt-12" />
+          <LabCard l={lab[2]!} offset="lg:mt-24" />
         </div>
       </div>
     </section>

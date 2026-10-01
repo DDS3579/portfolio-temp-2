@@ -165,12 +165,11 @@ export const STATES: Record<StateName, StateSpec> = {
   },
   journey: { nodes: journeyNodes, edges: journeyEdges, dynamicLit: "journey" },
   rest: {
-    nodes: { root: { x: 0.93, y: 0.5, lit: 0.8 } },
+    nodes: { root: { x: 0.93, y: 0.5, anchor: "phil-cursor", lit: 1, r: 1.4 } }, // reads the sentence, word by word
     edges: [],
-    dim: 0.7,
   },
   contact: {
-    nodes: { root: { x: 0.78, y: 0.36, anchor: "contact-node", lit: 1, r: 3.2 } },
+    nodes: { root: { x: 0.3, y: 0.3, anchor: "contact-node", lit: 1, fit: true } }, // the node becomes the heading's full stop    
     edges: [],
     pulse: true,
   },

@@ -49,7 +49,7 @@ function Counter({ active }: { active: number }) {
     return (
       <span
         aria-hidden
-        className="outline-numeral flex text-[clamp(5rem,14vw,13rem)] [-webkit-text-stroke-color:rgb(255_255_255/0.34)]"
+                className="outline-numeral flex text-[clamp(5rem,14vw,13rem)] [--stroke:rgb(255_255_255/0.4)]"
       >
         {pad(active + 1).split("").map((ch, k) => (
           <Digit key={k} d={Number(ch)} />

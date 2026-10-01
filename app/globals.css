@@ -66,7 +66,7 @@ body {
   font-weight: 700;
 }
 .t-hero { font-size: clamp(3rem, min(11.2vw, 17dvh), 11.5rem); font-weight: 800; font-variation-settings: "wdth" 86; letter-spacing: -0.014em; }
-@media (max-width: 639px) { .t-hero { font-size: clamp(2.75rem, 14.4vw, 4rem); } }
+@media (max-width: 639px) { .t-hero { font-size: clamp(2.4rem, calc((100vw - 2.5rem) / 7.3), 4.25rem); } }
 .t-section { font-size: clamp(2.25rem, 1rem + 4.2vw, 4.75rem); }
 .t-body { font-size: 1.0625rem; line-height: 1.65; max-width: 60ch; }
 .mono { font-family: var(--font-mono); font-size: 0.75rem; letter-spacing: 0; line-height: 1.4; }
@@ -140,7 +140,7 @@ html[data-constellation="live"] .period-dot { visibility: hidden; animation: non
 .lit-surface { border-color: color-mix(in srgb, var(--color-border), var(--color-key) calc(var(--lit) * 45%)); }
 
 .outline-numeral {
-  color: transparent; -webkit-text-stroke: 1px rgb(255 255 255 / 0.14);
+    color: transparent; -webkit-text-stroke: 1px var(--stroke, rgb(255 255 255 / 0.14));
   font-family: var(--font-display); font-weight: 800; font-variation-settings: "wdth" 80; line-height: 0.8; letter-spacing: -0.04em;
 }
 

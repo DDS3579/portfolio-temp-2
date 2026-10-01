@@ -1,7 +1,6 @@
 "use client";
 import { useRef, useState } from "react";
 import { ArrowUpRight, Mail } from "lucide-react";
-import ConstellationStatic from "@/components/constellation/ConstellationStatic";
 import { useLitSurface } from "@/components/constellation/useLitSurface";
 import Coordinates from "@/components/Coordinates";
 import Reveal from "@/components/motion/Reveal";
@@ -11,7 +10,6 @@ import { Input, Select, Textarea } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { has } from "@/content/fill";
 import { site } from "@/content/site";
-import { useTier } from "@/lib/tier";
 
 type Status = "idle" | "sending" | "sent" | "error";
 type Errors = Partial<Record<"name" | "email" | "message", string>>;
@@ -19,7 +17,6 @@ type Errors = Partial<Record<"name" | "email" | "message", string>>;
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export default function Contact({ hasResume }: { hasResume: boolean }) {
-  const tier = useTier();
   const formRef = useRef<HTMLFormElement>(null);
   const nameRef = useRef<HTMLInputElement>(null);
   const litRef = useLitSurface<HTMLDivElement>();
@@ -93,24 +90,16 @@ export default function Contact({ hasResume }: { hasResume: boolean }) {
       aria-labelledby="contact-title"
       className="relative mx-auto max-w-[1440px] px-[var(--gutter)] pt-28 pb-24 lg:pt-44"
     >
-      <div className="relative grid gap-10 lg:grid-cols-12">
-        <div className="lg:col-span-8">
-          <Reveal>
-            <SectionMarker className="mb-6">Region: Contact</SectionMarker>
-            <h2 id="contact-title" className="font-display t-section max-w-[14ch]">{site.contact.heading}</h2>
-            <p className="t-body mt-6 text-muted">{site.contact.text}</p>
-          </Reveal>
-        </div>
-        {/* the constellation converges here */}
-        <div className="relative hidden lg:col-span-4 lg:block">
-          <span aria-hidden data-node-anchor="contact-node" className="absolute top-16 left-1/2 size-px" />
-          {tier === "lite" && <ConstellationStatic state="contact" className="max-w-[180px]" />}
-        </div>
-        {tier === "lite" && (
-          <div className="lg:hidden">
-            <ConstellationStatic state="contact" className="max-w-[140px]" />
-          </div>
-        )}
+      <div className="relative">
+        <Reveal>
+          <SectionMarker className="mb-6">Region: Contact</SectionMarker>
+          {/* the final full stop is the node again: the hero's period, come home */}
+          <h2 id="contact-title" className="font-display max-w-[11ch] text-[clamp(3rem,0.5rem+8vw,9rem)] lg:max-w-[12ch]">
+            {site.contact.heading.replace(/\.$/, "")}
+            <span className="period-dot" data-node-anchor="contact-node" aria-hidden="true" />
+          </h2>
+          <p className="t-body mt-8 max-w-[44ch] text-muted">{site.contact.text}</p>
+        </Reveal>
       </div>
 
       <div className="mt-14 grid gap-14 lg:grid-cols-12">
