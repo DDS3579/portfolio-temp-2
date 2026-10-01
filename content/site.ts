@@ -13,10 +13,11 @@ export const site = {
   name: "Divya Darsheel Sharma",
   short: "DDS",
   role: "Founder & Full Stack Developer",
+  tagline: "Founder by ambition, developer by craft, designer by eye.",
   url: "https://divyadsharma.com.np",
   title: "Divya Darsheel Sharma | Founder & Full Stack Developer",
   description:
-    "Founder of Digira and full stack developer in Kathmandu. Products, systems and businesses built from first idea to scalable reality.",
+    "Divya Darsheel Sharma is a founder and full stack developer in Kathmandu, building products, systems and businesses under Digira.",
   location: "Kathmandu, Nepal",
   coordinates: { label: "Kathmandu", lat: "27.7172° N", lng: "85.3240° E" },
   links: {
@@ -36,8 +37,8 @@ export const site = {
     { id: "contact", label: "Contact" },
   ],
   hero: {
-    label: "Founder & Full Stack Developer",
-    lines: ["I build businesses", "from scratch to", "conglomerates"],
+    label: "Divya Darsheel Sharma",    // The first word of each line is the role (set heavy); the rest of the line is the qualifier (set light).
+    lines: ["Founder by ambition,", "developer by craft,", "designer by eye"],
     support:
       "Crafting products, systems, and digital experiences from first idea to scalable reality.",
     ctaPrimary: "View Work",
