@@ -1,7 +1,9 @@
 "use client";
 import { useScroll, useSpring, useTransform } from "motion/react";
 import * as m from "motion/react-m";
-import { Fragment, useEffect, useRef, useState } from "react";import { site } from "@/content/site";
+import { Fragment, useEffect, useRef, useState } from "react";
+import { buttonClass } from "@/components/ui/button";
+import { site } from "@/content/site";
 import { clamp, easeOutCubic } from "@/lib/ease";
 import { subscribe } from "@/lib/loop";
 import { ignite, scene } from "@/lib/scene";
