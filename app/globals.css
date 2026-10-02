@@ -99,7 +99,8 @@ body {
 html[data-shader="live"] .hero-fallback { display: none; }
 
 /* ---- hero timeline (CSS only: never blocked by hydration) ---- */
-.line-mask { display: block; overflow: hidden; padding-bottom: 0.16em; margin-bottom: -0.16em; }
+/* clip-path (not overflow) so the hover hint can extend past the right edge while the rise stays masked */
+.line-mask { display: block; clip-path: inset(0 -100vw 0 0); padding-bottom: 0.16em; margin-bottom: -0.16em; transition: opacity 0.45s var(--ease); }
 .line-inner {
   display: block;
   /* rise out of the mask, then get lit by the period: nearest line first, light travels up */
@@ -170,3 +171,18 @@ html[data-constellation="live"] .period-dot { visibility: hidden; animation: non
 .art-box { fill: rgb(154 161 172 / 0.07); }
 .art-node { fill: rgb(154 161 172 / 0.9); }
 .art-core { fill: #ffd9a0; opacity: var(--lit, 0); }
+
+
+/* ---- hero: the tagline is also a door (desktop, pointer devices) ---- */
+.line-text { display: inline-block; position: relative; color: inherit; text-decoration: none; }
+.hero-hint {
+  position: absolute; left: calc(100% + 1.5rem); top: 50%; white-space: nowrap;
+  font-size: 0.75rem; font-weight: 400; letter-spacing: 0; line-height: 1.4; color: var(--color-muted);
+  opacity: 0; transform: translate(-8px, -50%);
+  transition: opacity 0.35s var(--ease), transform 0.35s var(--ease); pointer-events: none;
+}
+.line-text:is(:hover, :focus-visible) .hero-hint { opacity: 1; transform: translate(0, -50%); }
+.t-hero:has(.line-text:is(:hover, :focus-visible)) .line-mask:not(:has(.line-text:is(:hover, :focus-visible))) { opacity: 0.45; }
+@media (hover: none), (max-width: 1023px) { .hero-hint { display: none; } }
+@media (hover: none) { .line-text { pointer-events: none; } }
+@media (prefers-reduced-motion: reduce) { .hero-hint, .line-mask { transition: none; } .hero-hint { transform: translate(0, -50%); } }

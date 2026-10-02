@@ -71,7 +71,15 @@ void main(){
   col += warm * (glow*0.6 + halo*0.20 + rays*reach*0.42 * (0.5+f)) * uIntensity * breathe;
   // fog catches the light
   col += KEY * 0.15 * smoothstep(0.3,0.8,f) * reach * uIntensity * breathe;
-
+    // dust in the beam: sparse motes drift through the light and only show where it reaches
+  vec2 g = uv * vec2(asp, 1.0) * 34.0 + vec2(uTime * 0.012, -uTime * 0.02);
+  vec2 cell = floor(g);
+  vec2 fp = fract(g) - 0.5;
+  float hh = hash(cell);
+  vec2 jit = (vec2(hash(cell + 7.1), hash(cell + 3.7)) - 0.5) * 0.55;
+  jit.y += sin(uTime * 0.5 + hh * 6.283) * 0.12;
+  float mote = smoothstep(0.11, 0.0, length(fp - jit)) * step(0.92, hh);
+  col += mix(KEY, CORE, 0.5) * mote * exp(-dist * 4.0) * (0.35 + 0.65 * smoothstep(0.3, 0.8, f)) * 0.9 * uIntensity;
   col += (hash(gl_FragCoord.xy + uTime) - 0.5) * 0.004; // dither, avoids banding
   o = vec4(col, 1.0);
 }`;
