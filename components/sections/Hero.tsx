@@ -1,8 +1,7 @@
 "use client";
 import { useScroll, useSpring, useTransform } from "motion/react";
 import * as m from "motion/react-m";
-import { Fragment, useEffect, useRef } from "react";import { buttonClass } from "@/components/ui/button";
-import { site } from "@/content/site";
+import { Fragment, useEffect, useRef, useState } from "react";import { site } from "@/content/site";
 import { clamp, easeOutCubic } from "@/lib/ease";
 import { subscribe } from "@/lib/loop";
 import { ignite, scene } from "@/lib/scene";
@@ -10,6 +9,27 @@ import { scrollToId } from "@/lib/scroll";
 import { useReducedMotionPref, useTier } from "@/lib/tier";
 
 const delay = (s: string) => ({ "--d": s }) as React.CSSProperties;
+
+/** "Digira: 3 branches" renders as muted label + bright value. Copy stays verbatim in /content. */
+/** Kathmandu local time, ticking on the minute. Client-only, so the server HTML never mismatches. */
+function NepalTime() {
+  const [t, setT] = useState("");
+  useEffect(() => {
+    const fmt = new Intl.DateTimeFormat("en-GB", { timeZone: "Asia/Kathmandu", hour: "2-digit", minute: "2-digit", hour12: false });
+    let id = 0;
+    const tick = () => {
+      setT(fmt.format(new Date()));
+      id = window.setTimeout(tick, 60000 - (Date.now() % 60000) + 50);
+    };
+    tick();
+    return () => window.clearTimeout(id);
+  }, []);
+  return (
+    <span className="inline-block min-w-[6ch] text-muted tabular-nums" title="Nepal Time (UTC+5:45)">
+      {t && `· ${t}`}
+    </span>
+  );
+}
 
 /** "Digira: 3 branches" renders as muted label + bright value. Copy stays verbatim in /content. */
 function Proof({ text }: { text: string }) {
@@ -21,10 +41,10 @@ function Proof({ text }: { text: string }) {
       {/^open/i.test(text) && <span aria-hidden className="size-1.5 rounded-full bg-key" />}
       {label && <span className="text-muted">{label}</span>}
       <span>{value}</span>
+      {text === site.location && <NepalTime />}
     </li>
   );
 }
-
 export default function Hero() {
   const section = useRef<HTMLElement>(null);
   const title = useRef<HTMLHeadingElement>(null);
@@ -75,14 +95,13 @@ export default function Hero() {
   }, [reduced]);
 
 
-  // After the room lights up, the headline falls off with distance from the light (0.5 floor).
-  // Opacity only, one rect read per word per frame, desktop only.
+  // After the room lights up, the light-weight qualifiers fall off with distance from the light.
+  // The heavy role words stay at full strength so the hierarchy never inverts. Opacity only, desktop only.
   useEffect(() => {
     if (!full) return;
-    const FLOOR = 0.74; // dimmest a word gets (the heavy role words must keep leading)
+    const FLOOR = 0.58; // dimmest a qualifier gets
     const REACH = 900; // px; falloff length from the light
-    const words = Array.from(title.current?.querySelectorAll<HTMLElement>(".hw") ?? []);
-    const cur = words.map(() => 1);
+    const words = Array.from(title.current?.querySelectorAll<HTMLElement>(".hw.by") ?? []);    const cur = words.map(() => 1);
     const shown = words.map(() => 1);
     const off = subscribe((dt, t) => {
       if (!scene.igniteAt || window.scrollY > window.innerHeight * 0.9) return;
@@ -126,17 +145,24 @@ export default function Hero() {
           </p>
           <h1 id="hero-title" ref={title} className="font-display t-hero">
             {h.lines.map((line, i) => (
-              <span key={line} className="line-mask">
+              <span key={line.text} className="line-mask">
                 <span className="line-inner" style={{ "--i": i } as React.CSSProperties}>
-                                    {line.split(" ").map((w, wi, all) => (
-                    <Fragment key={wi}>
-                      <span className={wi === 0 ? "hw" : "hw by"}>{w}</span>
-                      {wi < all.length - 1 && " "}
-                    </Fragment>
-                  ))}
-                  {i === h.lines.length - 1 && (
-                    <span ref={period} className="period-dot" data-node-anchor="hero-period" aria-hidden="true" />
-                  )}
+                  <a
+                    href={`#${line.to}`}
+                    onClick={(e) => { e.preventDefault(); scrollToId(line.to); }}
+                    className="line-text"
+                  >
+                    {line.text.split(" ").map((w, wi, all) => (
+                      <Fragment key={wi}>
+                        <span className={wi === 0 ? "hw" : "hw by"}>{w}</span>
+                        {wi < all.length - 1 && " "}
+                      </Fragment>
+                    ))}
+                    {i === h.lines.length - 1 && (
+                      <span ref={period} className="period-dot" data-node-anchor="hero-period" aria-hidden="true" />
+                    )}
+                    <span className="hero-hint mono" aria-hidden="true">→ {line.hint}</span>
+                  </a>
                 </span>
               </span>
             ))}
