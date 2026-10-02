@@ -38,7 +38,13 @@ export const site = {
   ],
   hero: {
     label: "Divya Darsheel Sharma",    // The first word of each line is the role (set heavy); the rest of the line is the qualifier (set light).
-    lines: ["Founder by ambition,", "developer by craft,", "designer by eye"],
+    // First word of each line is the role (set heavy); the rest is the qualifier (set light).
+    // Each line is also a door: hovering shows `hint`, clicking scrolls to section `to`. Facts only.
+    lines: [
+      { text: "Founder by ambition,", to: "work", hint: "Digira, 3 branches" },
+      { text: "developer by craft,", to: "capabilities", hint: "Next.js, FastAPI, AI agents" },
+      { text: "designer by eye", to: "journey", hint: "Design internship, Cozmos & Co." },
+    ],
     support:
       "Crafting products, systems, and digital experiences from first idea to scalable reality.",
     ctaPrimary: "View Work",
