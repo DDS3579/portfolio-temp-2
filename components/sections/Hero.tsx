@@ -132,7 +132,7 @@ export default function Hero() {
       id="top"
       data-zone="hero"
       aria-labelledby="hero-title"
-      className="relative flex min-h-[100dvh] flex-col pt-[calc(var(--nav-h)+1.5rem)] pb-8"
+            className="relative flex min-h-[100dvh] flex-col pt-[calc(var(--nav-h)+0.5rem)] sm:pt-[calc(var(--nav-h)+1.5rem)] pb-8"
     >
       <div className="hero-fallback" aria-hidden />
 
@@ -141,8 +141,8 @@ export default function Hero() {
         className="relative z-20 mx-auto flex w-full max-w-[1440px] flex-1 flex-col px-[var(--gutter)]"
       >
         {/* headline group sits in the optical middle so the light has room to fill the room */}
-        <div className="my-auto py-10">
-          <p className="t-late mb-8 text-base text-muted lg:mb-10" style={delay("1.6s")}>
+        <div className="my-auto pt-4 pb-6 sm:py-10">
+          <p className="t-late mb-5 text-base sm:mb-8 text-muted lg:mb-10" style={delay("1.6s")}>
             {h.label}
           </p>
           <h1 id="hero-title" ref={title} className="font-display t-hero">
@@ -173,8 +173,7 @@ export default function Hero() {
 
         {/* one bottom band: support, actions, proof */}
         <div
-          className="t-late relative grid gap-x-8 gap-y-8 border-t border-border pt-6 lg:grid-cols-12 lg:items-start"
-          style={delay("1.9s")}
+          className="t-late relative grid gap-x-8 gap-y-6 border-t border-border pt-5 sm:gap-y-8 sm:pt-6 lg:grid-cols-12 lg:items-start"          style={delay("1.9s")}
         >
           <span aria-hidden className="absolute -top-px left-0 h-px w-24 overflow-hidden">
             <span className="scroll-cue-x absolute inset-0 bg-key" />
