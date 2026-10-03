@@ -1,4 +1,5 @@
 import { clamp } from "./ease";
+import { scene } from "./scene";
 
 const MAX = 12;
 const surfaces = new Map<HTMLElement, { lit: number; lx: number; ly: number }>();
@@ -6,7 +7,14 @@ const surfaces = new Map<HTMLElement, { lit: number; lx: number; ly: number }>()
 export function registerLitSurface(el: HTMLElement) {
   if (surfaces.size >= MAX) return () => {};
   surfaces.set(el, { lit: -1, lx: 0, ly: 0 });
+  // No live layer (phones, tablets): the surface lights while it sits in the middle of the screen.
+  const io = new IntersectionObserver(
+    ([e]) => { if (!scene.live) el.style.setProperty("--lit", e?.isIntersecting ? "0.75" : "0"); },
+    { rootMargin: "-25% 0px -25% 0px" },
+  );
+  io.observe(el);
   return () => {
+    io.disconnect();
     surfaces.delete(el);
     el.style.removeProperty("--lit");
   };
