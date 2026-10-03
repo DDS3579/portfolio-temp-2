@@ -186,3 +186,9 @@ html[data-constellation="live"] .period-dot { visibility: hidden; animation: non
 @media (hover: none), (max-width: 1023px) { .hero-hint { display: none; } }
 @media (hover: none) { .line-text { pointer-events: none; } }
 @media (prefers-reduced-motion: reduce) { .hero-hint, .line-mask { transition: none; } .hero-hint { transform: translate(0, -50%); } }
+
+
+
+/* Without the live layer (phones, tablets) a surface warms when it is in the middle of the screen */
+@property --lit { syntax: "<number>"; inherits: true; initial-value: 0; }
+html:not([data-constellation]) .lit-surface { transition: --lit 0.9s var(--ease); }
