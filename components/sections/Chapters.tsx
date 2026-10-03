@@ -137,16 +137,16 @@ function Stacked() {
     <section id="chapters" data-zone="chapters" aria-labelledby="chapters-title" className="relative">
       <h2 id="chapters-title" className="sr-only">Chapters</h2>
       {chapters.map((c) => (
-        <div key={c.id} className="relative flex min-h-[80svh] items-center overflow-hidden border-t border-border py-16">
+        <div key={c.id} className="relative flex min-h-[60svh] items-center overflow-hidden border-t border-border py-14">
           <span
             aria-hidden
-            className="outline-numeral pointer-events-none absolute right-[-2vw] bottom-0 text-[clamp(10rem,42vw,20rem)]"
+            className="outline-numeral pointer-events-none absolute right-[5vw] bottom-4 text-[clamp(7rem,32vw,16rem)]"
           >
             {c.numeral}
           </span>
           <div className="relative z-20 mx-auto grid w-full max-w-[1440px] gap-10 px-[var(--gutter)] md:grid-cols-12">
             <Reveal className="md:col-span-5 md:col-start-1">
-              <ConstellationStatic state={c.id} className="max-w-[240px] md:max-w-[300px]" />
+              <ConstellationStatic state={c.id} className="max-w-[170px] md:max-w-[300px]" />
             </Reveal>
             <Reveal className="md:col-span-7" delay={0.08}>
               <SectionMarker className="mb-5">{c.region}</SectionMarker>
