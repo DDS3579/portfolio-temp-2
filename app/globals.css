@@ -67,7 +67,15 @@ body {
 }
 .t-hero { font-size: clamp(3rem, min(11.2vw, 17dvh, calc((min(100vw, 1440px) - 2 * var(--gutter)) / 7.1)), 11.5rem); font-weight: 800; font-variation-settings: "wdth" 86; letter-spacing: -0.014em; }
 .t-hero .by { font-weight: 300; }
-@media (max-width: 639px) { .t-hero { font-size: clamp(2.1rem, calc((100vw - 2.5rem) / 7.95), 4.25rem); } }.t-section { font-size: clamp(2.25rem, 1rem + 4.2vw, 4.75rem); }
+/* Phones: each clause becomes two lines (heavy role, light qualifier) so the headline fills the screen */
+@media (max-width: 639px) {
+  .t-hero { font-size: clamp(2.4rem, min(calc((100vw - 2.5rem) / 4), calc((100dvh - 32.5rem) / 4)), 6rem); }
+  .t-hero .line-text > .hw:not(.by) { display: block; }
+  .t-hero .by { font-size: 0.84em; }
+  .t-hero .line-mask + .line-mask { margin-top: 0.1em; }
+  .period-dot { width: 0.2em; height: 0.2em; }
+}
+.t-section { font-size: clamp(2.6rem, 1rem + 4.2vw, 4.75rem); }
 .t-body { font-size: 1.0625rem; line-height: 1.65; max-width: 60ch; }
 .mono { font-family: var(--font-mono); font-size: 0.75rem; letter-spacing: 0; line-height: 1.4; }
 
@@ -97,10 +105,20 @@ body {
 }
 @keyframes fade-in { to { opacity: 1; } }
 html[data-shader="live"] .hero-fallback { display: none; }
-
+/* phones and tablets have no shader: give the CSS light real presence */
+@media (max-width: 1023px) {
+  .hero-fallback {
+    background:
+      radial-gradient(90vw circle at var(--light-x) var(--light-y), rgb(232 176 75 / 0.26), rgb(201 101 43 / 0.1) 40%, transparent 72%),
+      radial-gradient(700px circle at 20% 85%, var(--color-fog-cool), transparent 70%);
+  }
+}
 /* ---- hero timeline (CSS only: never blocked by hydration) ---- */
 /* clip-path (not overflow) so the hover hint can extend past the right edge while the rise stays masked */
 .line-mask { display: block; clip-path: inset(0 -100vw 0 0); padding-bottom: 0.16em; margin-bottom: -0.16em; transition: opacity 0.45s var(--ease); }
+/* once the rise is done, stop clipping so the period's glow is never cut into a rectangle */
+.line-mask { animation: unclip 0s linear 2.8s forwards; }
+@keyframes unclip { to { clip-path: none; } }
 .line-inner {
   display: block;
   /* rise out of the mask, then get lit by the period: nearest line first, light travels up */
