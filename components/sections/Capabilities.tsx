@@ -49,7 +49,7 @@ export default function Capabilities() {
 
       {/* One DOM: accordion below lg; on lg the details share one grid area on the right (display: contents on li). */}
       <Reveal delay={0.1}>
-        <ul ref={list} className="relative mt-16 lg:mt-24 lg:grid lg:grid-cols-12 lg:grid-rows-3 lg:gap-x-10">
+        <ul ref={list} style={{ gridTemplateRows: `repeat(${disciplines.length}, auto)` }} className="relative mt-16 lg:mt-24 lg:grid lg:grid-cols-12 lg:gap-x-10">
           <span
             ref={marker}
             aria-hidden
@@ -96,8 +96,9 @@ export default function Capabilities() {
                   id={`cap-${d.id}`}
                   aria-hidden={!on}
                   inert={!on}
+                  style={{ gridRow: `1 / span ${disciplines.length}` }}
                   className={cn(
-                    "hidden pt-8 transition-[opacity,transform] duration-500 ease-[var(--ease)] lg:col-span-5 lg:col-start-8 lg:row-span-3 lg:row-start-1 lg:block",
+                    "hidden pt-8 transition-[opacity,transform] duration-500 ease-[var(--ease)] lg:col-span-5 lg:col-start-8 lg:block",
                     on ? "translate-y-0 opacity-100" : "pointer-events-none translate-y-3 opacity-0",
                   )}
                 >
@@ -116,7 +117,17 @@ function Details({ d }: { d: (typeof disciplines)[number] }) {
   return (
     <div>
       <p className="t-body max-w-[44ch]">{d.summary}</p>
-      <p className="mono mt-8 text-muted">{d.stack.join(" / ")}</p>
+      {d.figures?.length ? (
+        <dl className="mt-8 grid max-w-[30rem] grid-cols-2 gap-6">
+          {d.figures.map((f) => (
+            <div key={f.label} className="flex flex-col-reverse gap-2">
+              <dt className="text-sm leading-snug text-muted">{f.label}</dt>
+              <dd className="font-display text-[clamp(2.25rem,1.4rem+2.4vw,3.75rem)] leading-none tabular-nums">{f.value}</dd>
+            </div>
+          ))}
+        </dl>
+      ) : null}
+      {d.stack.length > 0 && <p className="mono mt-8 text-muted">{d.stack.join(" / ")}</p>}
       <ul className="mt-8 divide-y divide-border border-y border-border">
         {d.topics.map((t) => (
           <li key={t} className="py-3.5 text-[0.98rem]">{t}</li>
