@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import localFont from "next/font/local";
 import { GeistMono } from "geist/font/mono";
 import { GeistSans } from "geist/font/sans";
+import { disciplines } from "@/content/capabilities";
 import { site } from "@/content/site";
 import { has } from "@/content/fill";
 import "./globals.css";
@@ -46,6 +47,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     "@type": "Person",
     name: site.name,
     jobTitle: site.role,
+    knowsAbout: disciplines.map((d) => d.name),
     url: site.url,
     address: { "@type": "PostalAddress", addressLocality: "Kathmandu", addressCountry: "NP" },
     ...(sameAs.length ? { sameAs } : {}),
