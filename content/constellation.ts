@@ -64,7 +64,7 @@ export interface StateSpec {
 }
 
 /** Journey rail: entry i docks to node JOURNEY_NODES[i]. Must be at least as long as entries. */
-export const JOURNEY_NODES: NodeId[] = ["h1", "h2", "h3", "root", "agency", "nss", "lab-krishi"];
+export const JOURNEY_NODES: NodeId[] = ["h1", "h2", "h3", "h4", "root", "agency", "nss", "h5", "lab-krishi"];
 
 const journeyNodes: StateSpec["nodes"] = {};
 JOURNEY_NODES.forEach((id, i) => {
