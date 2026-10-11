@@ -12,7 +12,7 @@ function Word({
   w: string; i: number; n: number; p: MotionValue<number>; animate: boolean; setRef: (el: HTMLElement | null) => void;
 }) {
   const start = (i / n) * 0.8;
-  const opacity = useTransform(p, [start, start + 0.2], [0.15, 1]);
+  const opacity = useTransform(p, [start, start + 0.2], [0.4, 1]);
   return (
     <m.span ref={setRef} style={animate ? { opacity } : undefined} className="mr-[0.25em] inline-block">
       {w}

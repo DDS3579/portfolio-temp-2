@@ -1,13 +1,13 @@
 "use client";
-import * as m from "motion/react-m";
+import dynamic from "next/dynamic";
 import { Menu } from "lucide-react";
 import { useEffect, useState } from "react";
-import { Sheet, SheetClose, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { buttonClass } from "@/components/ui/button";
 import { site } from "@/content/site";
 import { cn } from "@/lib/cn";
-import { EASE } from "@/lib/ease";
 import { scrollToId, scrollToTop } from "@/lib/scroll";
+
+const MobileMenu = dynamic(() => import("./MobileMenu"), { ssr: false });
 
 function useActiveSection(ids: string[]) {
   const [active, setActive] = useState<string | null>(null);
@@ -34,6 +34,12 @@ const ids = site.nav.map((n) => n.id);
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    const ric = window.requestIdleCallback ?? ((cb: () => void) => window.setTimeout(cb, 1500));
+    const id = ric(() => { void import("./MobileMenu"); });
+    return () => { if (window.cancelIdleCallback) window.cancelIdleCallback(id as number); };
+  }, []);
   const active = useActiveSection(ids);
 
   useEffect(() => {
@@ -66,7 +72,7 @@ export default function Navbar() {
         <a
           href="#top"
           onClick={(e) => { e.preventDefault(); scrollToTop(); }}
-          aria-label={`${site.name}, back to top`}
+          aria-label={`DDS, ${site.name}, back to top`}
           className="font-display text-xl font-bold tracking-tight"
         >
           {site.short}
@@ -108,48 +114,16 @@ export default function Navbar() {
             Let&apos;s Build
           </a>
 
-          <Sheet open={open} onOpenChange={setOpen}>
-            <SheetTrigger
-              aria-label="Open menu"
-              className="grid size-11 place-items-center rounded-full border border-white/15 text-text lg:hidden"
-            >
-              <Menu className="size-5" aria-hidden />
-            </SheetTrigger>
-            <SheetContent title="Menu">
-              <ul className="mt-10 flex flex-1 flex-col gap-2">
-                {site.nav.map((n, i) => (
-                  <m.li
-                    key={n.id}
-                    initial={{ opacity: 0, y: 24 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.7, ease: EASE, delay: 0.1 + i * 0.08 }}
-                  >
-                    <SheetClose asChild>
-                      <a
-                        href={`#${n.id}`}
-                        onClick={go(n.id)}
-                        className="font-display flex min-h-14 items-center text-5xl"
-                        aria-current={active === n.id ? "location" : undefined}
-                      >
-                        {n.label}
-                      </a>
-                    </SheetClose>
-                  </m.li>
-                ))}
-              </ul>
-              <m.div
-                initial={{ opacity: 0, y: 24 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.7, ease: EASE, delay: 0.1 + site.nav.length * 0.08 }}
-              >
-                <SheetClose asChild>
-                  <a href="#contact" onClick={go("contact")} className={buttonClass("solid", "w-full")}>
-                    Let&apos;s Build
-                  </a>
-                </SheetClose>
-              </m.div>
-            </SheetContent>
-          </Sheet>
+          <button
+            type="button"
+            aria-label="Open menu"
+            aria-haspopup="dialog"
+            onClick={() => { setMounted(true); setOpen(true); }}
+            className="grid size-11 place-items-center rounded-full border border-white/15 text-text lg:hidden"
+          >
+            <Menu className="size-5" aria-hidden />
+          </button>
+          {mounted && <MobileMenu open={open} onOpenChange={setOpen} active={active} go={go} />}
         </div>
       </nav>
     </header>

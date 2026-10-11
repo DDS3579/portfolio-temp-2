@@ -1,10 +1,12 @@
 "use client";
 import type Lenis from "lenis";
-import { LazyMotion, MotionConfig, domAnimation } from "motion/react";
+import { LazyMotion, MotionConfig } from "motion/react";
 import { useEffect } from "react";
 import { subscribe } from "@/lib/loop";
 import { setLenis } from "@/lib/scroll";
 import { useTier } from "@/lib/tier";
+
+const loadFeatures = () => import("@/lib/motion-features").then((m) => m.default);
 
 /** MotionConfig (reducedMotion="user") + Lenis on desktop with a fine pointer only. */
 export default function MotionProvider({ children }: { children: React.ReactNode }) {
@@ -35,7 +37,7 @@ export default function MotionProvider({ children }: { children: React.ReactNode
 
   return (
     <MotionConfig reducedMotion="user">
-      <LazyMotion features={domAnimation} strict>
+      <LazyMotion features={loadFeatures} strict>
         {children}
       </LazyMotion>
     </MotionConfig>

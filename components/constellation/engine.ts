@@ -4,12 +4,14 @@ import {
   NODE_LABELS,
   STATES,
   STATE_ORDER,
+  type StateName,
   type EdgeSpec,
   type NodeId,
   type NodeSpec,
   type StateSpec,
 } from "@/content/constellation";
-import { clamp, easeInOutCubic, easeOutCubic, lerp } from "@/lib/ease";import { updateLitSurfaces } from "@/lib/lit";
+import { clamp, easeInOutCubic, easeOutCubic, lerp } from "@/lib/ease";
+import { updateLitSurfaces } from "@/lib/lit";
 import { igniteFlash, igniteRamp, scene } from "@/lib/scene";
 
 type Pt = { x: number; y: number };
@@ -91,8 +93,8 @@ export class ConstellationEngine {
       return { top: r.top + sy, h: r.height };
     };
     const zones = {
-            hero: z("hero"), chapters: z("chapters"), work: z("work"), capabilities: z("capabilities"), journey: z("journey"),
-      philosophy: z("philosophy"), contact: z("contact"),
+      hero: z("hero"), chapters: z("chapters"), work: z("work"), capabilities: z("capabilities"), journey: z("journey"),
+      philosophy: z("philosophy"), about: z("about"), contact: z("contact"),
     };
     this.zones = zones;
     const vh = this.h;
@@ -101,30 +103,36 @@ export class ConstellationEngine {
       const prev = st[st.length - 1];
       st.push([prev ? Math.max(prev[0], y) : y, s]);
     };
-    push(0, 0);
-    push(Math.min(vh * 0.8, zones.chapters?.top ?? vh * 0.8), 1);
+    const S = (n: StateName) => STATE_ORDER.indexOf(n);
+    push(0, S("hero"));
+    push(Math.min(vh * 0.8, zones.chapters?.top ?? vh * 0.8), S("origin"));
     if (zones.chapters) {
-      push(zones.chapters.top, 1);
-      push(zones.chapters.top + zones.chapters.h - vh, 4);
+      push(zones.chapters.top, S("origin"));
+      push(zones.chapters.top + zones.chapters.h - vh, S("conglomerate"));
     }
     if (zones.work) {
-      push(zones.work.top, 5);
-      push(zones.work.top + zones.work.h - vh, 5);
+      push(zones.work.top, S("work"));
+      push(zones.work.top + zones.work.h - vh, S("work"));
     }
-        if (zones.capabilities) {
-      push(zones.capabilities.top, 6);
-      push(zones.capabilities.top + zones.capabilities.h - vh, 6);
+    if (zones.capabilities) {
+      push(zones.capabilities.top, S("capabilities"));
+      push(zones.capabilities.top + zones.capabilities.h - vh, S("capabilities"));
     }
     if (zones.journey) {
-      push(zones.journey.top, 7);
-      push(zones.journey.top + zones.journey.h - vh, 7);
+      push(zones.journey.top, S("journey"));
+      push(zones.journey.top + zones.journey.h - vh, S("journey"));
     }
-    if (zones.philosophy) push(zones.philosophy.top, 8);
+    if (zones.philosophy) push(zones.philosophy.top, S("rest"));
+    if (zones.about) {
+      push(zones.about.top - vh * 0.9, S("rest"));
+      push(zones.about.top - vh * 0.3, S("about"));
+      push(zones.about.top + zones.about.h - vh * 0.6, S("about"));
+    }
     if (zones.contact) {
-      push(zones.contact.top - vh * 0.9, 8);
-      push(zones.contact.top - vh * 0.3, 9);
+      push(zones.contact.top - vh * 0.9, zones.about ? S("about") : S("rest"));
+      push(zones.contact.top - vh * 0.3, S("contact"));
     }
-    push(Number.MAX_SAFE_INTEGER, 9);
+    push(Number.MAX_SAFE_INTEGER, S("contact"));
     this.stops = st;
 
     this.anchors.clear();

@@ -4,6 +4,7 @@ import dynamic from "next/dynamic";
 import DevWarnings from "@/components/DevWarnings";
 import MotionProvider from "@/components/motion/MotionProvider";
 import Backdrop from "@/components/sections/Backdrop";
+const About = dynamic(() => import("@/components/sections/About"));
 const Capabilities = dynamic(() => import("@/components/sections/Capabilities"));
 const Chapters = dynamic(() => import("@/components/sections/Chapters"));
 const Contact = dynamic(() => import("@/components/sections/Contact"));
@@ -35,6 +36,7 @@ export default function Page() {
         <Capabilities />
         <Journey />
         <Philosophy />
+        <About />
         <Testimonials />
         <Contact hasResume={hasResume} />
       </main>

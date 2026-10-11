@@ -21,11 +21,11 @@ export const NODE_LABELS: Partial<Record<NodeId, string>> = {
 };
 
 export type StateName =
-    | "hero" | "origin" | "build" | "scale" | "conglomerate" | "work" | "capabilities" | "journey" | "rest" | "contact";
+  | "hero" | "origin" | "build" | "scale" | "conglomerate" | "work" | "capabilities" | "journey" | "rest" | "about" | "contact";
 
 /** Order the layer walks through as the page scrolls. */
 export const STATE_ORDER: StateName[] = [
-    "hero", "origin", "build", "scale", "conglomerate", "work", "capabilities", "journey", "rest", "contact",
+  "hero", "origin", "build", "scale", "conglomerate", "work", "capabilities", "journey", "rest", "about", "contact",
 ];
 
 export interface NodeSpec {
@@ -168,8 +168,12 @@ export const STATES: Record<StateName, StateSpec> = {
     nodes: { root: { x: 0.93, y: 0.5, anchor: "phil-cursor", lit: 1, r: 1.4 } }, // reads the sentence, word by word
     edges: [],
   },
+  about: {
+    nodes: { root: { x: 0.1, y: 0.3, anchor: "about-node", lit: 1, r: 1.3 } },
+    edges: [],
+  },
   contact: {
-    nodes: { root: { x: 0.3, y: 0.3, anchor: "contact-node", lit: 1, fit: true } }, // the node becomes the heading's full stop    
+    nodes: { root: { x: 0.3, y: 0.3, anchor: "contact-node", lit: 1, fit: true } }, // the node becomes the heading's full stop
     edges: [],
     pulse: true,
   },

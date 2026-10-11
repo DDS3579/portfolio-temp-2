@@ -78,7 +78,7 @@ export const entries: Entry[] = [
     short: "Three branches",
     dates: FILL,
     duration: FILL,
-    description: "Digiragency builds web products and AI agents. Digira Esports runs Mobile Legends: Bang Bang tournaments in Nepal.",
+    description: "Digiragency builds web products and AI agents. Digira Esports runs Mobile Legends: Bang Bang tournaments in Nepal. Digira Education runs Olympiad and hackathon programs for students.",
     figures: [
       { value: "3", label: "branches" },
       { value: "16", label: "teams in Esports Season 1.0" },

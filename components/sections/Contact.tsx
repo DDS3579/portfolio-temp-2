@@ -11,7 +11,7 @@ import { Label } from "@/components/ui/label";
 import { has } from "@/content/fill";
 import { site } from "@/content/site";
 
-type Status = "idle" | "sending" | "sent" | "error";
+type Status = "idle" | "sending" | "sent" | "mailto" | "error";
 type Errors = Partial<Record<"name" | "email" | "message", string>>;
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -46,7 +46,8 @@ export default function Contact({ hasResume }: { hasResume: boolean }) {
     if (data.message.length < 10) next.message = "Tell me a little about the project (10+ characters).";
     setErrors(next);
     if (Object.keys(next).length) {
-      formRef.current?.querySelector<HTMLElement>("[aria-invalid=true]")?.focus();
+      const first = (["name", "email", "message"] as const).find((k) => next[k]);
+      if (first) document.getElementById(`c-${first}`)?.focus();
       return;
     }
 
@@ -58,7 +59,7 @@ export default function Contact({ hasResume }: { hasResume: boolean }) {
     };
 
     if (!endpoint) {
-      if (mailto()) { setStatus("sent"); return; }
+      if (mailto()) { setStatus("mailto"); return; }
       setStatus("error");
       return;
     }
@@ -105,10 +106,14 @@ export default function Contact({ hasResume }: { hasResume: boolean }) {
       <div className="mt-14 grid gap-14 lg:grid-cols-12">
         <Reveal className="lg:col-span-7">
           <div ref={litRef} className="lit-surface rounded-xl border border-border p-6 md:p-10">
-            {status === "sent" ? (
+            {status === "sent" || status === "mailto" ? (
               <div role="status" aria-live="polite" className="py-10">
-                <h3 className="font-display text-4xl">Message sent.</h3>
-                <p className="t-body mt-4 text-muted">Thanks. I read every message and will reply to the email you gave.</p>
+                <h3 className="font-display text-4xl">{status === "sent" ? "Message sent." : "Almost there."}</h3>
+                <p className="t-body mt-4 text-muted">
+                  {status === "sent"
+                    ? "Thanks. I read every message and will reply to the email you gave."
+                    : `Your email app should open with the message ready to send. If nothing opens, write to ${has(email) ? email : "me"} directly.`}
+                </p>
               </div>
             ) : (
               <form ref={formRef} onSubmit={onSubmit} noValidate aria-label="Start a project" className="grid gap-6">

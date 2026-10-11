@@ -7,7 +7,7 @@ const env = {
   x: process.env.NEXT_PUBLIC_X_URL,
   email: process.env.NEXT_PUBLIC_EMAIL,
 };
-const fromEnv = (v: string | undefined): Maybe => (v && v.trim() ? v.trim() : FILL);
+const fromEnv = (v: string | undefined, fallback: string): Maybe => (v && v.trim() ? v.trim() : fallback);
 
 export const site = {
   name: "Divya Darsheel Sharma",
@@ -21,10 +21,10 @@ export const site = {
   location: "Kathmandu, Nepal",
   coordinates: { label: "Kathmandu", lat: "27.7172° N", lng: "85.3240° E" },
   links: {
-    github: fromEnv(env.github),
-    linkedin: fromEnv(env.linkedin),
-    x: fromEnv(env.x),
-    email: fromEnv(env.email),
+    github: fromEnv(env.github, "https://github.com/dds3579"),
+    linkedin: fromEnv(env.linkedin, "https://linkedin.com/in/dds3579"),
+    x: fromEnv(env.x, FILL),
+    email: fromEnv(env.email, "contact@divyadsharma.com.np"),
   },
   form: {
     endpoint: process.env.NEXT_PUBLIC_FORM_ENDPOINT ?? "",
@@ -34,6 +34,7 @@ export const site = {
     { id: "work", label: "Work" },
     { id: "capabilities", label: "Capabilities" },
     { id: "journey", label: "Journey" },
+    { id: "about", label: "About" },
     { id: "contact", label: "Contact" },
   ],
   hero: {
