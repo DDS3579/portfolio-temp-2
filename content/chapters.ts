@@ -15,7 +15,7 @@ export const chapters: Chapter[] = [
     region: "Region: Origin",
     numeral: "1",
     heading: "Every empire starts with a first line of code.",
-    body: FILL, // first things built
+    body: "I started with HTML CSS JS built a few simple web pages then learn React and got into my Journey of Full Stack Development", // first things built
   },
   {
     id: "build",
