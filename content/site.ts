@@ -23,7 +23,7 @@ export const site = {
   links: {
     github: fromEnv(env.github, "https://github.com/dds3579"),
     linkedin: fromEnv(env.linkedin, "https://linkedin.com/in/dds3579"),
-    x: fromEnv(env.x, FILL),
+    x: fromEnv(env.x, "https://x.com/dds3579"),
     email: fromEnv(env.email, "contact@divyadsharma.com.np"),
   },
   form: {
